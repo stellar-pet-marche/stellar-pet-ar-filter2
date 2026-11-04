@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fffaf0">
+  <meta name="description" content="ステラペットマルシェの開催を、ARフィルターでシェアしよう！">
+  <title>隠れミッション｜ステラペットマルシェ</title>
+  <style>
+    :root { color-scheme: light; --navy:#153a76; --gold:#edae24; --cream:#fffaf0; --ink:#26334a; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100svh; font-family: system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif; color:var(--ink); background: radial-gradient(ellipse at 50% 0%,#fff 0,#fffaf0 58%,#fff4d9 100%); }
+    button { font:inherit; }
+    .screen { min-height:100svh; display:flex; align-items:center; justify-content:center; padding:24px 18px max(24px,env(safe-area-inset-bottom)); }
+    .card { width:min(100%,480px); padding:clamp(24px,7vw,42px); background:#ffffffed; border:1px solid #f0dfb5; border-radius:30px; box-shadow:0 18px 55px #6e57221a; text-align:center; position:relative; overflow:hidden; }
+    .card:before,.card:after { content:"✦"; position:absolute; color:var(--gold); font-size:25px; }
+    .card:before { top:18px; left:21px; }.card:after { right:22px; bottom:18px; }
+    .eyebrow { display:inline-block; padding:7px 15px; border-radius:99px; background:#fff1c9; color:#805500; font-weight:800; letter-spacing:.12em; font-size:.8rem; }
+    h1 { margin:18px 0 12px; color:var(--navy); font-size:clamp(1.8rem,8vw,2.55rem); line-height:1.2; }
+    .intro { margin:0 auto 22px; font-size:1.05rem; line-height:1.8; }
+    .mission { background:#f5f8ff; border:1px solid #d9e3f7; border-radius:20px; padding:18px 16px; margin:22px 0; }
+    .mission-title { margin:0 0 7px; color:var(--navy); font-weight:900; font-size:1.08rem; }
+    .mission p { margin:0; line-height:1.65; }
+    .tags { margin:13px 0 0!important; color:var(--navy); font-weight:750; font-size:.93rem; line-height:1.8!important; overflow-wrap:anywhere; }
+    .note { color:#657086; font-size:.82rem; line-height:1.55; margin:15px 0 0; }
+    .primary,.secondary { border:0; border-radius:999px; cursor:pointer; font-weight:850; }
+    .primary { width:100%; min-height:58px; padding:15px 20px; color:#fff; background:linear-gradient(100deg,#193e80,#2754a1); box-shadow:0 8px 18px #153a7633; font-size:1.08rem; }
+    .primary:active,.secondary:active { transform:translateY(1px); }
+    .secondary { padding:12px 18px; color:var(--navy); background:#edf2fc; }
+    .hidden { display:none!important; }
+    #cameraScreen { padding:0; display:block; background:#111; color:white; }
+    .camera { width:100%; height:100svh; position:relative; overflow:hidden; background:#111; }
+    #video { width:100%; height:100%; object-fit:cover; }
+    #frame { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; pointer-events:none; }
+    .cam-top { position:absolute; top:max(14px,env(safe-area-inset-top)); left:14px; right:14px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .cam-label { border-radius:99px; background:#0008; padding:9px 13px; font-size:.82rem; font-weight:750; backdrop-filter:blur(8px); }
+    .icon-button { width:42px; height:42px; border:0; border-radius:50%; color:#fff; background:#0008; font-size:1.2rem; }
+    .cam-bottom { position:absolute; bottom:max(22px,env(safe-area-inset-bottom)); left:0; right:0; display:flex; align-items:center; justify-content:center; gap:20px; padding:0 18px; }
+    .shutter { width:74px; height:74px; border:5px solid #fff; border-radius:50%; background:#ffffff55; box-shadow:0 0 0 3px #0005; }
+    .flip { width:52px; height:52px; border:0; border-radius:50%; color:#fff; background:#0008; font-size:1.35rem; }
+    .capture-actions { position:absolute; inset:auto 15px max(22px,env(safe-area-inset-bottom)); display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+    #captureScreen { background:#111; color:#fff; }
+    .result-wrap { width:min(100%,480px); text-align:center; }
+    #resultImage { display:block; width:min(100%,360px); max-height:65svh; object-fit:contain; margin:0 auto 20px; border-radius:18px; }
+    .result-wrap h2 { margin:0 0 8px; }
+    .result-wrap p { margin:0 0 17px; color:#e4e4e4; line-height:1.55; }
+    .result-buttons { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+    .result-buttons .primary { width:auto; min-height:48px; }
+    .error { color:#ad2f18; font-weight:700; margin:14px 0 0; }
+    @media (max-height:700px) { .card { padding:22px 24px; }.mission { margin:14px 0; padding:13px; }.intro { margin-bottom:12px; } }
+  </style>
+</head>
+<body>
+  <main id="missionScreen" class="screen">
+    <section class="card" aria-labelledby="mainTitle">
+      <span class="eyebrow">STELLAR PET MARCHE</span>
+      <h1 id="mainTitle">隠れミッション🌟</h1>
+      <p class="intro">ステラペットマルシェ開催を<br><strong>アピールしよう！</strong></p>
+      <div class="mission">
+        <p class="mission-title">ARフィルターで写真を撮って<br>インスタグラムに投稿しよう📷️</p>
+        <p class="tags">#ステラペットマルシェ<br>#ステラモール<br>#ペピカ<br>@stellar_petmarche をつけてね❣️</p>
+      </div>
+      <button id="startButton" class="primary" type="button">ARフィルターを起動する ✨</button>
+      <p class="note">カメラの使用を許可すると、撮影画面が開きます。<br>撮影した写真は端末に保存して投稿できます。</p>
+      <p id="errorMessage" class="error hidden" role="alert"></p>
+    </section>
+  </main>
+
+  <section id="cameraScreen" class="hidden" aria-label="AR撮影画面">
+    <div class="camera">
+      <video id="video" autoplay playsinline muted></video>
+      <img id="frame" src="assets/stellar-ar-frame.png" alt="ステラペットマルシェARフレーム">
+      <div class="cam-top">
+        <span class="cam-label">ステラペットマルシェ AR</span>
+        <button id="closeCamera" class="icon-button" type="button" aria-label="閉じる">×</button>
+      </div>
+      <div class="cam-bottom">
+        <button id="flipCamera" class="flip" type="button" aria-label="カメラを切り替え">↻</button>
+        <button id="takePhoto" class="shutter" type="button" aria-label="写真を撮影"></button>
+        <span style="width:52px" aria-hidden="true"></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="captureScreen" class="screen hidden" aria-label="撮影した写真">
+    <div class="result-wrap">
+      <img id="resultImage" alt="ARフィルターで撮影した写真">
+      <h2>撮影できました📷️</h2>
+      <p>写真を保存して、Instagramに投稿しよう！<br>投稿文にはハッシュタグと<br>@stellar_petmarche をつけてね❣️</p>
+      <div class="result-buttons">
+        <button id="savePhoto" class="primary" type="button">写真を保存する</button>
+        <button id="retakePhoto" class="secondary" type="button">もう一度撮る</button>
+        <button id="backToMission" class="secondary" type="button">案内に戻る</button>
+      </div>
+    </div>
+  </section>
+
+  <canvas id="captureCanvas" class="hidden"></canvas>
+  <script>
+    const missionScreen = document.querySelector('#missionScreen');
+    const cameraScreen = document.querySelector('#cameraScreen');
+    const captureScreen = document.querySelector('#captureScreen');
+    const video = document.querySelector('#video');
+    const frame = document.querySelector('#frame');
+    const canvas = document.querySelector('#captureCanvas');
+    const errorMessage = document.querySelector('#errorMessage');
+    let stream = null;
+    let facingMode = 'environment';
+    let photoUrl = null;
+
+    function stopCamera() {
+      if (stream) stream.getTracks().forEach(track => track.stop());
+      stream = null;
+      video.srcObject = null;
+    }
+
+    async function openCamera() {
+      errorMessage.classList.add('hidden');
+      try {
+        stopCamera();
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 } }
+        });
+        video.srcObject = stream;
+        await video.play();
+        missionScreen.classList.add('hidden');
+        captureScreen.classList.add('hidden');
+        cameraScreen.classList.remove('hidden');
+      } catch (error) {
+        const message = error.name === 'NotAllowedError'
+          ? 'カメラの使用が許可されていません。ブラウザーの設定でカメラを許可してください。'
+          : 'カメラを起動できませんでした。HTTPSで開いているか、カメラが他のアプリで使用中でないか確認してください。';
+        errorMessage.textContent = message;
+        errorMessage.classList.remove('hidden');
+      }
+    }
+
+    function drawCover(ctx, source, width, height) {
+      const scale = Math.max(width / source.videoWidth, height / source.videoHeight);
+      const sw = width / scale;
+      const sh = height / scale;
+      const sx = (source.videoWidth - sw) / 2;
+      const sy = (source.videoHeight - sh) / 2;
+      ctx.drawImage(source, sx, sy, sw, sh, 0, 0, width, height);
+    }
+
+    document.querySelector('#startButton').addEventListener('click', openCamera);
+    document.querySelector('#closeCamera').addEventListener('click', () => {
+      stopCamera(); cameraScreen.classList.add('hidden'); missionScreen.classList.remove('hidden');
+    });
+    document.querySelector('#flipCamera').addEventListener('click', async () => {
+      facingMode = facingMode === 'environment' ? 'user' : 'environment';
+      await openCamera();
+    });
+    document.querySelector('#takePhoto').addEventListener('click', async () => {
+      if (!video.videoWidth) return;
+      const width = 1080, height = 1920;
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      drawCover(ctx, video, width, height);
+      if (!frame.complete) await new Promise(resolve => frame.addEventListener('load', resolve, { once: true }));
+      ctx.drawImage(frame, 0, 0, width, height);
+      canvas.toBlob(blob => {
+        if (!blob) return;
+        if (photoUrl) URL.revokeObjectURL(photoUrl);
+        photoUrl = URL.createObjectURL(blob);
+        document.querySelector('#resultImage').src = photoUrl;
+        stopCamera(); cameraScreen.classList.add('hidden'); captureScreen.classList.remove('hidden');
+      }, 'image/jpeg', .94);
+    });
+    document.querySelector('#savePhoto').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.href = photoUrl; link.download = 'stellar-pet-marche-ar.jpg'; link.click();
+    });
+    document.querySelector('#retakePhoto').addEventListener('click', openCamera);
+    document.querySelector('#backToMission').addEventListener('click', () => {
+      captureScreen.classList.add('hidden'); missionScreen.classList.remove('hidden');
+    });
+    window.addEventListener('pagehide', stopCamera);
+  </script>
+</body>
+</html>
